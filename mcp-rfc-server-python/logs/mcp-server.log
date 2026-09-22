@@ -1,0 +1,10 @@
+[2026-09-21T16:40:30.768Z] [INFO] SharePoint client initialized (Mode: MOCK)
+[2026-09-21T16:40:30.769Z] [INFO] Connecting to PostgreSQL...
+[2026-09-21T16:40:30.791Z] [INFO] ✓ PostgreSQL connected
+[2026-09-21T16:40:30.791Z] [INFO] Checking Ollama connection...
+[2026-09-21T16:40:30.804Z] [INFO] ✓ Ollama connected
+[2026-09-21T16:40:30.806Z] [INFO] 🚀 MCP Server running on 0.0.0.0:3001
+[2026-09-21T16:40:30.806Z] [INFO] Environment: development
+[2026-09-21T16:40:30.807Z] [INFO] Database: rfc_management
+[2026-09-21T16:40:30.807Z] [INFO] Ollama: http://ollama:11434
+[2026-09-21T17:24:35.163Z] [INFO] SIGTERM received, shutting down gracefully...

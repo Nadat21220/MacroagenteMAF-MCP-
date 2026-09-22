@@ -1,0 +1,32 @@
+{
+  "name": "rfc-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP Server: PostgreSQL + Ollama Bridge for RFC Management",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "NODE_ENV=development node src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "postgresql",
+    "ollama",
+    "rfc",
+    "llm"
+  ],
+  "author": "Macropay",
+  "license": "ISC",
+  "dependencies": {
+    "@azure/msal-node": "^2.9.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "axios": "^1.6.2",
+    "express": "^4.18.2",
+    "markitdown-js": "^0.0.14",
+    "pg": "^8.11.2",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
