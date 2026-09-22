@@ -1,0 +1,29 @@
+# MCP Protocol (fijado a serie 1.x: mcpo aun no soporta el salto a mcp 2.x)
+mcp==1.30.0
+
+# MCP -> OpenAPI bridge (permite que Open WebUI use las herramientas MCP)
+mcpo==0.0.20
+
+# Database
+psycopg[binary]>=3.1.0
+psycopg-pool>=3.1.0
+
+# Configuration
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+
+# File Processing
+openpyxl>=3.1.0
+python-pptx>=0.6.21
+markdownify>=0.11.0
+pandas>=2.0.0
+
+# HTTP & API
+requests>=2.31.0
+httpx>=0.24.0
+
+# Logging & Monitoring
+python-json-logger>=2.0.7
+
+# Utilities
+typing-extensions>=4.7.0

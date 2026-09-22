@@ -1,0 +1,278 @@
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  postgres:
+    container_name: postgres_rfc_db
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-rfcadmin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-rfc_secure_2024}
+      POSTGRES_DB: ${DB_NAME:-rfc_management}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # Configuración para mejor rendimiento con LLMs
+      shared_buffers: 256MB
+      effective_cache_size: 1GB
+      maintenance_work_mem: 64MB
+      checkpoint_completion_target: 0.9
+      wal_buffers: 16MB
+      default_statistics_target: 100
+      random_page_cost: 1.1
+      effective_io_concurrency: 200
+      work_mem: 4MB
+      min_wal_size: 2GB
+      max_wal_size: 8GB
+    
+    ports:
+      - "5432:5432"
+    
+    volumes:
+      # Persistencia de datos
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts de inicialización
+      - ./init-scripts:/docker-entrypoint-initdb.d
+      # Backups SQL
+      - ./backups:/backups
+    
+    networks:
+      - rfc_network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-rfcadmin} -d ${DB_NAME:-rfc_management}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  # ============================================
+  # Ollama - LLM Local
+  # ============================================
+  ollama:
+    container_name: ollama_service
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    
+    environment:
+      # Configuración de modelos
+      OLLAMA_HOST: 0.0.0.0:11434
+      OLLAMA_MODELS: /root/.ollama/models
+    
+    ports:
+      - "11434:11434"
+    
+    volumes:
+      # Persistencia de modelos descargados
+      - ollama_models:/root/.ollama
+      # Scripts de inicialización de modelos
+      - ./ollama-init:/ollama-init
+    
+    networks:
+      - rfc_network
+    
+    # GPU NVIDIA (RTX 4050) para acelerar inferencia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  # ============================================
+  # pgAdmin - Interface Web para PostgreSQL
+  # ============================================
+  pgadmin:
+    container_name: pgadmin_interface
+    image: dpage/pgadmin4:latest
+    restart: unless-stopped
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@rfc.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2024}
+      SCRIPT_NAME: /pgadmin
+    
+    ports:
+      - "5050:80"
+    
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    
+    networks:
+      - rfc_network
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost/pgadmin/misc/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  # ============================================
+  # MCP Server - Intermediario LLM-BD
+  # ============================================
+  mcp_server:
+    container_name: mcp_postgresql_bridge
+    build:
+      context: ./mcp-rfc-server-python
+      dockerfile: Dockerfile
+    restart: unless-stopped
+
+    environment:
+      # Conexion a PostgreSQL (usar nombre del servicio como host)
+      DATABASE_URL: postgresql://${DB_USER:-rfcadmin}:${DB_PASSWORD:-rfc_secure_2024}@postgres:5432/${DB_NAME:-rfc_management}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-rfcadmin}
+      DB_PASSWORD: ${DB_PASSWORD:-rfc_secure_2024}
+      DB_NAME: ${DB_NAME:-rfc_management}
+
+      # Configuracion MCP
+      MCP_PORT: 3001
+      MCP_HOST: 0.0.0.0
+      PYTHONUNBUFFERED: 1
+
+    ports:
+      - "3001:3001"
+
+    volumes:
+      - ./mcp-rfc-server-python/logs:/app/logs
+      - ./DATOS_RFC/RFC:/app/RFC:ro
+      - ./converted_docs:/app/converted_docs
+
+    networks:
+      - rfc_network
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/openapi.json"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+  # ============================================
+  # Open WebUI - Interfaz Chat + Orquestador MCP
+  # ============================================
+  open_webui:
+    container_name: open_webui_interface
+    build:
+      context: ./open-webui-src
+      dockerfile: Dockerfile
+      args:
+        BUILD_HASH: rfc-ai-gen-custom
+    image: rfc-ai-gen/open-webui:custom
+    restart: unless-stopped
+
+    environment:
+      # Conexion a Ollama
+      OLLAMA_BASE_URL: http://ollama:11434
+
+      # Configuracion Open WebUI
+      WEBUI_AUTH: true
+      SCOPED_FILE_UPLOAD_MAX_SIZE: 500
+      ENABLE_OAUTH_SIGNUP: false
+
+      # Branding
+      WEBUI_NAME: "RFC AI Gen"
+
+      # Modelo por defecto (santiago = mistral + system prompt RFC)
+      DEFAULT_MODELS: santiago:latest
+
+      # Base de datos compartida: usa el mismo PostgreSQL del proyecto
+      # (en vez de SQLite local, para unificar backups/auditoria)
+      DATABASE_URL: postgresql://${DB_USER:-rfcadmin}:${DB_PASSWORD:-rfc_secure_2024}@postgres:5432/openwebui_db
+
+    ports:
+      - "3000:8080"
+
+    volumes:
+      - open_webui_data:/app/backend/data
+
+    networks:
+      - rfc_network
+
+    depends_on:
+      ollama:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+
+# ============================================
+# Volumenes Persistentes
+# ============================================
+volumes:
+  postgres_data:
+    driver: local
+  ollama_models:
+    driver: local
+  pgadmin_data:
+    driver: local
+  open_webui_data:
+    driver: local
+
+
+# ============================================
+# Red Interna
+# ============================================
+networks:
+  rfc_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

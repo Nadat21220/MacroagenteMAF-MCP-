@@ -1,0 +1,29 @@
+# Entornos virtuales Python
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Variables de entorno con credenciales reales
+.env
+mcp-rfc-server-python/.env
+
+# Grabacion de reunion interna (no es parte del codigo)
+Informacion extra /Sesion para el entendimiento de peticiones para TI apartir de solicitudes del negocio-20260902_110549-Grabación de la reunión.mp4
+
+# Logs
+*.log
+mcp-rfc-server-python/logs/*
+!mcp-rfc-server-python/logs/.gitkeep
+
+# Node modules (si se generan al construir open-webui-src)
+node_modules/
+open-webui-src/build/
+open-webui-src/.svelte-kit/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Locks de LibreOffice/Office
+.~lock.*
