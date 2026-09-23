@@ -227,7 +227,7 @@ Cuando tu empresa apruebe, solo necesitas:
 
 ## 🎉 RESUMEN EJECUTIVO
 
-**El sistema Macropay RFC Management está completamente funcional y listo para usar.**
+**El sistema NovaPay RFC Management está completamente funcional y listo para usar.**
 
 - ✅ Conversión de documentos: OPERACIONAL
 - ✅ Almacenamiento en BD: OPERACIONAL

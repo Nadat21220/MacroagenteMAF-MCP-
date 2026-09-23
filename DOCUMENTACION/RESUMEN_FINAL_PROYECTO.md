@@ -1,4 +1,4 @@
-# 📊 RESUMEN FINAL: Proyecto Macropay RFC Management System
+# 📊 RESUMEN FINAL: Proyecto NovaPay RFC Management System
 
 **Fecha:** 2026-09-17  
 **Estado:** 83% Completado - Sistema Funcional
@@ -66,7 +66,7 @@ El LLM (Ollama) puede:
 ## 📂 ESTRUCTURA DEL PROYECTO
 
 ```
-Proyecto_Macropay/
+Proyecto_NovaPay/
 ├── 🗄️ init-scripts/
 │   ├── 01-init-db.sql         (Original)
 │   └── 02-create-document-sync-tables.sql  (NUEVA - Fase 1)
@@ -234,7 +234,7 @@ Documentación:      ✓ Completa
 
 ---
 
-**Proyecto:** Macropay RFC Management System  
+**Proyecto:** NovaPay RFC Management System  
 **Estado:** Funcional 83% - Listo para desarrollo  
 **Fecha:** 2026-09-17  
 **Versión:** 1.0.0

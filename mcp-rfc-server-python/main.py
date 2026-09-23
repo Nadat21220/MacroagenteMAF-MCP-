@@ -29,6 +29,7 @@ from utils.database import (
     log_audit,
     close_db_pool
 )
+from utils.sql_guard import validate_query, SQLGuardError
 
 # ===== CONFIGURAR LOGGING =====
 logging.basicConfig(
@@ -58,53 +59,41 @@ def _read_xlsx_to_markdown(file_path: str) -> str:
 
 # ===== HERRAMIENTA 1: Control PostgreSQL =====
 @mcp.tool()
-def tool_postgres_control(action: str, query: str, params: Optional[list] = None) -> str:
+def tool_postgres_control(action: str = "", query: str = "", params: Optional[list] = None) -> str:
     """
-    Ejecutar consultas SQL en PostgreSQL. Usa EXCLUSIVAMENTE estas tablas y columnas reales
-    (no existen otras tablas como "rfc" o "status"; usar siempre estos nombres exactos):
+    Ejecuta SQL en PostgreSQL. Usa SOLO estas tablas/columnas (no existen "rfc", "status" ni otras):
 
-    - rfc_records (project_id es la llave natural, no "id"):
-        id (uuid), project_id (varchar, UNICO), environment (Dev|QA|PROD),
-        project_name (varchar), impacted_platforms (integer)
+    rfc_records: project_id* UNIQUE, environment[Dev|QA|PROD], project_name, impacted_platforms
+    directorio_personal: empleado_id* uuid, nombre, apellido, departamento, email
+    rfc_responsables: asignacion_id*, project_id->rfc_records, empleado_id->directorio_personal, rol_asignado
+    rfc_document_index: index_id*, file_name, file_type, project_id->rfc_records
+    rfc_markdown_index: markdown_id*, rfc_file_id->rfc_document_index, project_id, markdown_content, conversion_status, sync_status, created_by
+    query_audit: audit_id*, query_type, executed_query, executed_at
+    rfc_audit_logs: audit_log_id*, project_id, action_type, performed_by, details_json, performed_at
 
-    - directorio_personal:
-        empleado_id (uuid), nombre, apellido, departamento, email
-
-    - rfc_responsables (tabla puente):
-        asignacion_id (uuid), project_id (FK -> rfc_records.project_id),
-        empleado_id (FK -> directorio_personal.empleado_id), rol_asignado
-
-    - rfc_document_index (archivos fisicos indexados):
-        index_id (uuid), file_name, file_type, project_id (FK -> rfc_records.project_id)
-
-    - rfc_markdown_index (conversion a markdown, contenido real en markdown_content):
-        markdown_id (uuid), rfc_file_id (FK -> rfc_document_index.index_id),
-        project_id, original_file_name, markdown_file_name, markdown_content (bytea),
-        conversion_status, sync_status, created_at, created_by
-
-    - sharepoint_sync_log (auditoria de sync documental):
-        sync_log_id (uuid), markdown_id (FK), operation_type (create|update|move|delete_attempt),
-        operation_status (success|pending|failed|cancelled), requested_by, requested_at
-
-    - query_audit: audit_id, query_type, executed_query, executed_at, execution_time_ms
-
-    - rfc_audit_logs (auditoria de acciones de negocio):
-        audit_log_id (uuid), project_id, action_type, performed_by, details_json, performed_at
-
-    Ejemplo para resolver nombres desde empleado_id (usar JOIN, no dos queries separadas):
-        SELECT dp.nombre, dp.apellido, rr.rol_asignado
-        FROM rfc_responsables rr
-        JOIN directorio_personal dp ON dp.empleado_id = rr.empleado_id
-        WHERE rr.project_id = 'td189-bf25'
+    Para nombres de responsables usa JOIN (no dos queries separadas):
+        SELECT dp.nombre, dp.apellido, rr.rol_asignado FROM rfc_responsables rr
+        JOIN directorio_personal dp ON dp.empleado_id = rr.empleado_id WHERE rr.project_id = 'td189-bf25'
 
     Args:
-        action: "select" para leer datos, "insert" para guardar datos
-        query: Consulta SQL usando SOLO las tablas/columnas listadas arriba
-        params: Parámetros para evitar inyección SQL
+        action: "select" para leer, "insert" para INSERT/UPDATE
+        query: SQL usando SOLO las tablas de arriba
+        params: lista de valores para placeholders %s
 
     Returns:
-        JSON con resultados o mensaje de error
+        JSON con resultados o error.
     """
+    if not action or not query:
+        return json.dumps({
+            "success": False,
+            "error": 'action y query son obligatorios. Ejemplo: {"action":"select","query":"SELECT ..."}'
+        })
+
+    try:
+        validate_query(action, query)
+    except SQLGuardError as e:
+        return json.dumps({"success": False, "error": str(e)})
+
     try:
         if action == "select":
             results = query_select(query, params or [])
@@ -128,13 +117,7 @@ def tool_convert_rfc_to_markdown(
     """
     Convertir documento RFC (Excel) a Markdown para mejor procesamiento del LLM.
 
-    Args:
-        project_id: ID del proyecto (ej: td189-bf25)
-        rfc_file_id: UUID del archivo RFC en la base de datos
-        requested_by: Email del usuario que solicita la conversión
-
-    Returns:
-        JSON con ID de conversión y estado
+    Args: project_id (ej td189-bf25), rfc_file_id (uuid en rfc_document_index), requested_by (email)
     """
     try:
         # Verificar que el archivo este indexado para este proyecto
@@ -224,13 +207,7 @@ def tool_get_markdown(
 ) -> str:
     """
     Obtener documento Markdown convertido de un RFC.
-
-    Args:
-        project_id: ID del proyecto (ej: td189-bf25)
-        requested_by: Email del usuario
-
-    Returns:
-        Contenido Markdown del RFC convertido
+    Args: project_id (ej td189-bf25), requested_by (email)
     """
     try:
         sql = """
@@ -277,18 +254,9 @@ def tool_sharepoint_create(
     requested_by: Optional[str] = None
 ) -> str:
     """
-    Registrar la creacion de un documento en el indice de gestion documental.
-    SharePoint real no esta conectado: se guarda en PostgreSQL, listo para
-    sincronizar con SharePoint cuando existan credenciales.
-
-    Args:
-        markdown_id: UUID del markdown convertido
-        target_folder_id: ID de carpeta destino
-        document_name: Nombre del documento
-        requested_by: Email del usuario que autoriza
-
-    Returns:
-        JSON con ID del log de sincronizacion
+    Registra la creacion de un documento en el indice de gestion documental
+    (SharePoint no conectado aun: se guarda en PostgreSQL).
+    Args: markdown_id (uuid), target_folder_id, document_name, requested_by (email)
     """
     try:
         existing = query_select(
@@ -348,14 +316,7 @@ def tool_sharepoint_update(
 ) -> str:
     """
     Editar el contenido de un documento en el indice de gestion documental.
-
-    Args:
-        markdown_id: UUID del markdown a actualizar
-        new_content: Nuevo contenido Markdown
-        requested_by: Email del usuario que autoriza
-
-    Returns:
-        JSON con confirmación de actualización
+    Args: markdown_id (uuid), new_content, requested_by (email)
     """
     try:
         content_bytes = new_content.encode("utf-8")
@@ -414,16 +375,7 @@ def tool_sharepoint_move(
 ) -> str:
     """
     Registrar el movimiento de un documento a otra carpeta en el indice documental.
-
-    Args:
-        markdown_id: UUID del documento a mover
-        source_folder_id: ID de carpeta origen
-        target_folder_id: ID de carpeta destino
-        new_name: Nuevo nombre (opcional)
-        requested_by: Email del usuario que autoriza
-
-    Returns:
-        JSON con confirmación de movimiento
+    Args: markdown_id (uuid), source_folder_id, target_folder_id, new_name, requested_by (email)
     """
     try:
         existing = query_select(
@@ -474,13 +426,7 @@ def tool_sharepoint_read(
 ) -> str:
     """
     Leer el contenido real de un documento del indice de gestion documental.
-
-    Args:
-        markdown_id: UUID del documento a leer
-        requested_by: Email del usuario
-
-    Returns:
-        Contenido del documento
+    Args: markdown_id (uuid), requested_by (email)
     """
     try:
         result = query_select(
@@ -522,16 +468,9 @@ def tool_sync_to_sharepoint(
     requested_by: Optional[str] = None
 ) -> str:
     """
-    Sincronizar documento Markdown. SharePoint real no esta conectado
-    (credenciales pendientes): se sincroniza contra el indice local en PostgreSQL.
-
-    Args:
-        markdown_id: UUID del markdown a sincronizar
-        target_folder_id: ID de carpeta destino
-        requested_by: Email del usuario que autoriza
-
-    Returns:
-        JSON con ID de sincronización
+    Sincronizar documento Markdown (SharePoint no conectado aun: sincroniza
+    contra el indice local en PostgreSQL).
+    Args: markdown_id (uuid), target_folder_id, requested_by (email)
     """
     try:
         existing = query_select(

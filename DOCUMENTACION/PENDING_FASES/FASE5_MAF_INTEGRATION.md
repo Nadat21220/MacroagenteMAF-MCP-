@@ -1,5 +1,5 @@
 # 🚀 FASE 5: MAF Integration - LLM con Capacidades Completas
-## Proyecto Macropay
+## Proyecto NovaPay
 
 **Estado:** ✅ IMPLEMENTADA  
 **Fecha:** 2026-09-17  
@@ -298,7 +298,7 @@ curl http://localhost:3000/health
 
 ---
 
-## 🎓 Estado Final: Proyecto Macropay
+## 🎓 Estado Final: Proyecto NovaPay
 
 ```
 ✅ Fase 1: Base de Datos         - COMPLETA

@@ -1,21 +1,21 @@
-# 🔗 INTEGRACIÓN CON PLATAFORMA MACROPAY RFC
+# 🔗 INTEGRACIÓN CON PLATAFORMA NOVAPAY RFC
 
-**Guía para integrar el MCP Server en rfc.macropay.mx (Next.js + FastAPI)**
+**Guía para integrar el MCP Server en rfc.novapay.mx (Next.js + FastAPI)**
 
 ---
 
 ## 📌 CONTEXTO
 
-La plataforma RFC de Macropay está compuesta por:
+La plataforma RFC de NovaPay está compuesta por:
 
 | Componente | Tech | Ubicación |
 |-----------|------|-----------|
-| **Frontend** | Next.js 16 + React 19 | rfc.macropay.mx |
-| **Backend Principal** | FastAPI (Python 3.12) | api-rfc.macropay.mx |
+| **Frontend** | Next.js 16 + React 19 | rfc.novapay.mx |
+| **Backend Principal** | FastAPI (Python 3.12) | api-rfc.novapay.mx |
 | **Infra Reader** | FastAPI (read-only) | api-rfc-infra-reader |
 | **Bridge** | FastAPI | api-rfc-bridge |
-| **BD** | SQL Server | PlataformaRFC, InfraDevopsMacropay |
-| **Almacenamiento** | S3 | rfc-documents-macropay |
+| **BD** | SQL Server | PlataformaRFC, InfraDevopsNovaPay |
+| **Almacenamiento** | S3 | rfc-documents-novapay |
 
 **El MCP Server es un ASISTENTE que genera/valida RFCs** antes de que se creen en la plataforma real.
 
@@ -24,7 +24,7 @@ La plataforma RFC de Macropay está compuesta por:
 ## 🎯 Objetivo de Integración
 
 ```
-Usuario en rfc.macropay.mx:
+Usuario en rfc.novapay.mx:
   "Ayuda, necesito crear un RFC para migrar a RDS"
      │
      ▼
@@ -60,7 +60,7 @@ Content-Type: application/json
 {
   "prompt": "crear RFC para cambiar configuración de S3",
   "context": {
-    "userId": "user@macropay.mx",
+    "userId": "user@novapay.mx",
     "department": "Infraestructura",
     "environment": "PROD",
     "platforms": ["AWS", "Kubernetes"]
@@ -155,7 +155,7 @@ async function getExistingRFCs() {
 ```typescript
 // MCP genera RFC, lo envía a FastAPI
 async function createRFCInPlatform(rfcData) {
-  const res = await fetch('https://api-rfc.macropay.mx/api/rfc/create', {
+  const res = await fetch('https://api-rfc.novapay.mx/api/rfc/create', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -231,7 +231,7 @@ router.post('/assistant/generate', async (req, res) => {
     const input = GenerateRFCSchema.parse(req.body);
     
     // Construir prompt para LLM
-    const systemPrompt = `Eres un asistente experto en RFCs de Macropay.
+    const systemPrompt = `Eres un asistente experto en RFCs de NovaPay.
     El usuario solicita crear un RFC. 
     Genera una estructura RFC válida con todos los campos requeridos.
     Responde SIEMPRE en JSON formato.`;
@@ -392,7 +392,7 @@ services:
   mcp-server:
     build:
       context: ./mcp-server
-    container_name: macropay_mcp_server
+    container_name: novapay_mcp_server
     restart: always
     environment:
       DATABASE_URL: postgresql://rfcadmin:${DB_PASSWORD}@postgres-core:5432/rfc_system_db
@@ -406,7 +406,7 @@ services:
       - postgres-core
       - ollama
     networks:
-      - macropay_network
+      - novapay_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
@@ -421,10 +421,10 @@ services:
 ```bash
 # En Servidor S2
 MCP_SERVICE_TOKEN=<token-aleatorio-fuerte>
-SQL_SERVER_HOST=sql-prod.macropay.internal
+SQL_SERVER_HOST=sql-prod.novapay.internal
 SQL_SERVER_USER=mcp-service
 SQL_SERVER_PASSWORD=<contraseña-fuerte>
-FASTAPI_BACKEND_URL=https://api-rfc.macropay.mx
+FASTAPI_BACKEND_URL=https://api-rfc.novapay.mx
 FASTAPI_SERVICE_TOKEN=<mismo-token-coordinado>
 OLLAMA_MODEL=mistral
 ```
@@ -466,7 +466,7 @@ limit_req_zone $binary_remote_addr zone=mcp:10m rate=5r/s;
 ### 3. Monitoreo y Logging
 ```bash
 # En S2, configurar logs centralizados
-docker-compose logs -f mcp-server | tee /var/log/macropay-mcp.log
+docker-compose logs -f mcp-server | tee /var/log/novapay-mcp.log
 
 # Nginx access logs
 tail -f /var/log/nginx/access.log | grep "api-rfc-mcp"
@@ -484,7 +484,7 @@ tail -f /var/log/nginx/access.log | grep "api-rfc-mcp"
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ 1. Usuario abre rfc.macropay.mx                                │
+│ 1. Usuario abre rfc.novapay.mx                                │
 │    → Navega a "Crear RFC" → "Con Asistencia"                  │
 └────────────────────────────────────────────────────────────────┘
                            │

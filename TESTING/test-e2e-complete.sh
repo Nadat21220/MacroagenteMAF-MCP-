@@ -7,7 +7,7 @@
 set -e
 
 BASE_URL="http://localhost:3000"
-REQUESTED_BY="test@macropay.mx"
+REQUESTED_BY="test@novapay.mx"
 PASS=0
 FAIL=0
 TEST_NUM=0

@@ -1,6 +1,6 @@
 # 🏗️ ARQUITECTURA: Diseño Técnico del MCP
 
-**Documento técnico detallado de la arquitectura del Macropay RFC MCP Server**
+**Documento técnico detallado de la arquitectura del NovaPay RFC MCP Server**
 
 ---
 
@@ -342,7 +342,7 @@ docker-compose.yml             ← Orquestación de servicios
 
 ## 🚀 Decisiones Arquitectónicas
 
-### 1. PostgreSQL en lugar de SQL Server (Macropay)
+### 1. PostgreSQL en lugar de SQL Server (NovaPay)
 **Por qué:**
 - MCP es independiente, no debe replicar datos de producción
 - Facilita testing sin acceso a BD corporativa
@@ -401,7 +401,7 @@ docker-compose.yml             ← Orquestación de servicios
 - Sincronizar documentos bidireccionales
 
 ### Fase 6: SQL Server Integration
-- Leer metadatos RFC de SQL Server de Macropay
+- Leer metadatos RFC de SQL Server de NovaPay
 - Escribir RFCs creados por MCP en SQL Server
 - Sincronización de cambios
 

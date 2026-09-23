@@ -8,7 +8,7 @@ echo "📋 Testing Fase 2 - Nuevos Endpoints..."
 echo ""
 
 BASE_URL="http://localhost:3000"
-REQUESTED_BY="test@macropay.mx"
+REQUESTED_BY="test@novapay.mx"
 
 # Colores
 GREEN='\033[0;32m'

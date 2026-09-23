@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BASE_URL="http://localhost:3000"
-REQUESTED_BY="test@macropay.mx"
+REQUESTED_BY="test@novapay.mx"
 
 # Valores conocidos de la BD
 PROJECT_ID="td189-bf25"

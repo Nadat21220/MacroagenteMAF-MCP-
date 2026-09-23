@@ -102,7 +102,7 @@ Fase 2: Integracion con Alfresco REST API (real)
 
 ### 1. Comando Unico
 ```bash
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 ./start.sh
 ```
 
@@ -141,7 +141,7 @@ OK Servicios levantados:
 ## Estructura de Carpetas
 
 ```
-Proyecto_Macropay/
+Proyecto_NovaPay/
 ├── README.md ........................ Este archivo
 ├── ARCHITECTURE.md .................. Arquitectura completa
 ├── docker-compose.yml ............... Todos los servicios
@@ -308,7 +308,7 @@ MCP_HOST=0.0.0.0
 
 ```bash
 # 1. Navega al proyecto
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 
 # 2. Levanta todo (5-30 seg segun sistema)
 ./start.sh → Opcion 1

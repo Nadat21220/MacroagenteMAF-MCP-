@@ -50,8 +50,8 @@ BEGIN
         rfc_records.environment
     FROM rfc_records
     WHERE
-        project_id ILIKE '%' || search_term || '%' OR
-        project_name ILIKE '%' || search_term || '%';
+        rfc_records.project_id ILIKE '%' || search_term || '%' OR
+        rfc_records.project_name ILIKE '%' || search_term || '%';
 END;
 $$ LANGUAGE plpgsql;
 

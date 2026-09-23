@@ -9,7 +9,7 @@ Has migracion COMPLETA de arquitectura:
 ## 1. Levantar Sistema (Opcion Recomendada)
 
 ```bash
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 ./start.sh
 ```
 
@@ -201,7 +201,7 @@ docker-compose restart open_webui_interface
 ### PostgreSQL password error
 Verificar archivo .env:
 ```bash
-cat /home/nadat21220/Documentos/Proyecto_Macropay/mcp-rfc-server-python/.env
+cat /home/nadat21220/Documentos/Proyecto_NovaPay/mcp-rfc-server-python/.env
 ```
 
 Debe coincidir con docker-compose.yml
@@ -220,7 +220,7 @@ Debe coincidir con docker-compose.yml
 
 Listo? Comienza con:
 ```bash
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 ./start.sh
 ```
 

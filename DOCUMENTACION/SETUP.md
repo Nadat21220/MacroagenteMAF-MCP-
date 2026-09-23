@@ -30,7 +30,7 @@ git --version           # Para clonar repo (opcional)
 
 ### Paso 1: Preparar directorio
 ```bash
-cd /home/nadat21220/Documentos/Proyecto_Macropay
+cd /home/nadat21220/Documentos/Proyecto_NovaPay
 
 # Verificar estructura
 ls -la
@@ -181,7 +181,7 @@ curl -X POST http://localhost:3000/api/documents/convert-rfc \
 ```
 
 ### Testing con Postman (opcional)
-- Importar colecciones de `/Informacion extra/macropay-rfc-export/collections/`
+- Importar colecciones de `/Informacion extra/novapay-rfc-export/collections/`
 - Configurar variable `BASE_URL = http://localhost:3000`
 - Ejecutar requests
 
@@ -213,18 +213,18 @@ git push origin main
 
 # Opción 2: SCP/rsync
 rsync -avz --exclude=node_modules --exclude=.env \
-  . usuario@s2:/opt/macropay-rfc-mcp/
+  . usuario@s2:/opt/novapay-rfc-mcp/
 
 # Opción 3: Tar
-tar --exclude=node_modules --exclude=.env -czf macropay-rfc.tar.gz .
-scp macropay-rfc.tar.gz usuario@s2:/opt/
-ssh usuario@s2 'cd /opt && tar -xzf macropay-rfc.tar.gz -C /opt/macropay-rfc-mcp/'
+tar --exclude=node_modules --exclude=.env -czf novapay-rfc.tar.gz .
+scp novapay-rfc.tar.gz usuario@s2:/opt/
+ssh usuario@s2 'cd /opt && tar -xzf novapay-rfc.tar.gz -C /opt/novapay-rfc-mcp/'
 ```
 
 ### Paso 3: Configurar S2
 ```bash
 # En S2:
-cd /opt/macropay-rfc-mcp
+cd /opt/novapay-rfc-mcp
 
 # Crear .env con variables de producción
 cp .env.example .env
@@ -259,7 +259,7 @@ curl http://localhost:3000/health
 
 ### Paso 6: Configurar reverse proxy (nginx/Apache)
 ```nginx
-# /etc/nginx/sites-enabled/macropay-rfc-mcp
+# /etc/nginx/sites-enabled/novapay-rfc-mcp
 server {
     listen 80;
     server_name api-rfc-mcp.s2.example.com;

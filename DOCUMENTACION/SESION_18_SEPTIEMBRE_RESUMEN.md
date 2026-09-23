@@ -106,7 +106,7 @@ DESPUÉS:
 ## 📁 ESTRUCTURA FINAL
 
 ```
-Proyecto_Macropay/ (54 MB)
+Proyecto_NovaPay/ (54 MB)
 │
 ├── 📖 DOCUMENTACION/
 │   ├── README.md
@@ -200,13 +200,13 @@ DOCUMENTO CRÍTICO: INTEGRACION_PLATAFORMA.md
 
 ### Opción 1: Script automático (Recomendado)
 ```bash
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 ./run-mcp-server.sh
 ```
 
 ### Opción 2: Manual
 ```bash
-cd ~/Documentos/Proyecto_Macropay
+cd ~/Documentos/Proyecto_NovaPay
 
 # Crear/activar venv
 python3 -m venv venv
@@ -290,7 +290,7 @@ El proyecto **estaba desviado** porque:
 
 **Resultado:**
 - ✅ Proyecto limpio y enfocado
-- ✅ Próximo paso cristalino: integración con rfc.macropay.mx
+- ✅ Próximo paso cristalino: integración con rfc.novapay.mx
 - ✅ Documentación lista para implementación
 - ✅ Sistema en Python puro, más mantenible
 
@@ -312,7 +312,7 @@ El proyecto **estaba desviado** porque:
 
 ```bash
 # Verificar estructura
-ls -la ~/Documentos/Proyecto_Macropay/
+ls -la ~/Documentos/Proyecto_NovaPay/
 
 # Verificar Python y dependencias
 source venv/bin/activate
@@ -326,9 +326,9 @@ python -c "import mcp; import psycopg; print('✓ OK')"
 
 **Status:** ✅ **LISTO PARA PRÓXIMA FASE**
 
-El proyecto está limpio, documentado, y listo. El siguiente paso es implementar la integración con la plataforma web de Macropay (ver INTEGRACION_PLATAFORMA.md).
+El proyecto está limpio, documentado, y listo. El siguiente paso es implementar la integración con la plataforma web de NovaPay (ver INTEGRACION_PLATAFORMA.md).
 
 ---
 
 **Sesión completada:** 2026-09-18 · ~4 horas de trabajo
-**Próxima sesión:** Implementar integración con rfc.macropay.mx
+**Próxima sesión:** Implementar integración con rfc.novapay.mx

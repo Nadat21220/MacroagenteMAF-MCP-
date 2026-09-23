@@ -22,7 +22,9 @@ def get_db_pool() -> ConnectionPool:
                 max_size=20,
                 min_size=5,
                 open=True,
-                timeout=10
+                timeout=10,
+                check=ConnectionPool.check_connection,
+                kwargs={"options": "-c statement_timeout=8000"}
             )
             logger.info("✓ Pool de PostgreSQL inicializado")
         except Exception as e:

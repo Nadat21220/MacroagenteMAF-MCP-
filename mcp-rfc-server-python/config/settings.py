@@ -10,14 +10,14 @@ load_dotenv()
 # ===== CONFIGURACIÓN DE BASE DE DATOS =====
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://rfcadmin:rfcsecurepass@localhost:5432/rfc_system_db"
+    "postgresql://rfcadmin:rfc_secure_2024@localhost:5432/rfc_management"
 )
 
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", "5432"))
 DB_USER = os.getenv("DB_USER", "rfcadmin")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "rfcsecurepass")
-DB_NAME = os.getenv("DB_NAME", "rfc_system_db")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "rfc_secure_2024")
+DB_NAME = os.getenv("DB_NAME", "rfc_management")
 
 # ===== CONFIGURACIÓN DE OLLAMA =====
 OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://localhost:11434")

@@ -1,4 +1,4 @@
-# 🚀 Macropay RFC Management System - Proyecto Completo
+# 🚀 NovaPay RFC Management System - Proyecto Completo
 
 **Estado:** ✅ Completado (83% Operacional - Listo para Desarrollo)  
 **Fecha:** 2026-09-17  
@@ -86,7 +86,7 @@ PostgreSQL          SharePoint
 ## 📁 ESTRUCTURA DEL PROYECTO
 
 ```
-Proyecto_Macropay/
+Proyecto_NovaPay/
 ├── init-scripts/
 │   ├── 01-init-db.sql
 │   └── 02-create-document-sync-tables.sql (NUEVA)
@@ -256,7 +256,7 @@ Cuando tu empresa apruebe credenciales Azure, Fase 4 se activa en 5 minutos.
 
 ---
 
-**Proyecto:** Macropay RFC Management System  
+**Proyecto:** NovaPay RFC Management System  
 **Versión:** 1.0.0  
 **Status:** ✅ Production Ready (Mock Mode)  
 **Fecha:** 2026-09-17

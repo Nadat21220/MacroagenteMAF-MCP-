@@ -1,4 +1,4 @@
-# 📈 PUNTOS DE AVANCE: Proyecto Macropay RFC MCP
+# 📈 PUNTOS DE AVANCE: Proyecto NovaPay RFC MCP
 
 **Organización completa del proyecto por fases de completitud**
 
@@ -66,10 +66,10 @@
 
 ---
 
-## 🟠 AVANCE 3: INTEGRACIÓN CON PLATAFORMA MACROPAY (Próximo - 0%)
+## 🟠 AVANCE 3: INTEGRACIÓN CON PLATAFORMA NOVAPAY (Próximo - 0%)
 
 ### Objetivo
-Conectar MCP con rfc.macropay.mx (Next.js + FastAPI + SQL Server)
+Conectar MCP con rfc.novapay.mx (Next.js + FastAPI + SQL Server)
 
 ### Tareas por hacer
 1. **Implementar endpoint en MCP** (2-3 horas)
@@ -203,7 +203,7 @@ Conectar MCP con rfc.macropay.mx (Next.js + FastAPI + SQL Server)
 ## 📁 ESTRUCTURA FINAL DEL PROYECTO
 
 ```
-Proyecto_Macropay/ (54 MB sin node_modules)
+Proyecto_NovaPay/ (54 MB sin node_modules)
 │
 ├── 📖 DOCUMENTACION/
 │   ├── README.md                         ← Guía principal

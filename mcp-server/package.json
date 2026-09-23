@@ -15,7 +15,7 @@
     "rfc",
     "llm"
   ],
-  "author": "Macropay",
+  "author": "NovaPay",
   "license": "ISC",
   "dependencies": {
     "@azure/msal-node": "^2.9.0",

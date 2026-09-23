@@ -109,7 +109,7 @@ services:
     restart: unless-stopped
     
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@rfc.local}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@rfc-ai-gen.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-pgadmin_2024}
       SCRIPT_NAME: /pgadmin
     
